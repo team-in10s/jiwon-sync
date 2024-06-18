@@ -7,6 +7,8 @@ from datetime import datetime
 
 # 웹소켓 URL 설정
 WS_SERVER_URL = "ws://jiwon-sync.in10s.co:8000"
+# WS_SERVER_URL = "ws://localhost:8000"
+
 
 # URL 파라미터로부터 연락처를 받아옴
 user_id = st.query_params["user_id"]
