@@ -1,0 +1,20 @@
+# Base image
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the application files
+COPY admin_streamlit.py .
+
+# Expose the port Streamlit runs on
+EXPOSE 8502
+
+# Run Streamlit
+CMD ["streamlit", "run", "admin_streamlit.py", "--server.port=8502", "--server.address=0.0.0.0"]
