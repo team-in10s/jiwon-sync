@@ -9,8 +9,6 @@ services:
       - "80:8501"
     environment:
       - STREAMLIT_SERVER_HEADLESS=true
-    volumes:
-      - .:/app
     networks:
       - app-network
 
@@ -22,8 +20,6 @@ services:
       - "8502:8502"
     environment:
       - STREAMLIT_SERVER_HEADLESS=true
-    volumes:
-      - .:/app
     networks:
       - app-network
 
@@ -33,8 +29,6 @@ services:
       dockerfile: Dockerfile.websocket
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
     networks:
       - app-network
 
