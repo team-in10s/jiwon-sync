@@ -6,8 +6,8 @@ import nest_asyncio
 from datetime import datetime
 
 # 웹소켓 URL 설정
-# WS_SERVER_URL = "ws://localhost:8000"
 WS_SERVER_URL = "ws://jiwon-sync.in10s.co:8080"
+
 
 # URL 파라미터로부터 연락처를 받아옴
 user_id = st.query_params["user_id"]
@@ -70,7 +70,7 @@ async def send_data():
                     st.markdown(f"### {platform} 엑세스 코드: {access_code}")
                     st.success(f"{platform}에 엑세스 코드를 입력하여 로그인해주세요.")
                     
-                    if st.button("엑세스 코드 재요청",f"rerequest_{platform}"):
+                    if st.button("엑세스 코드 재요청"):
                         await websocket.send(json.dumps({
                             "type": "access_code_request",
                             "user_id": user_id,
