@@ -76,7 +76,7 @@ async def handler(websocket, path):
                 }))
 
 async def main():
-    async with websockets.serve(handler, "localhost", WS_SERVER_PORT):
+    async with websockets.serve(handler, "0.0.0.0", WS_SERVER_PORT):
         await asyncio.Future()  # 서버가 종료되지 않도록 유지
 
 asyncio.run(main())
