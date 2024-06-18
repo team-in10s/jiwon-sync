@@ -3,7 +3,7 @@ import websockets
 import json
 
 # 웹소켓 서버 포트 설정
-WS_SERVER_PORT = 8000
+WS_SERVER_PORT = 8080
 
 connected_clients = {}
 user_requests = {}
