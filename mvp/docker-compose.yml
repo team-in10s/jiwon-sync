@@ -6,11 +6,13 @@ services:
       context: .
       dockerfile: Dockerfile.user
     ports:
-      - "80:8501"
+      - "8501:8501"
     environment:
       - STREAMLIT_SERVER_HEADLESS=true
     volumes:
       - .:/app
+    networks:
+      - app-network
 
   admin-app:
     build:
@@ -22,6 +24,8 @@ services:
       - STREAMLIT_SERVER_HEADLESS=true
     volumes:
       - .:/app
+    networks:
+      - app-network
 
   websocket-server:
     build:
@@ -31,3 +35,9 @@ services:
       - "8080:8080"
     volumes:
       - .:/app
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
