@@ -2,81 +2,41 @@ import asyncio
 import websockets
 import json
 
-# 웹소켓 서버 포트 설정
-WS_SERVER_PORT = 8080
+clients = {}
 
-connected_clients = {}
-user_requests = {}
+async def register(websocket, role, user_id):
+    clients[user_id] = {"websocket": websocket, "role": role}
+    print(f"{role.capitalize()} {user_id} connected.")
+
+async def unregister(user_id):
+    if user_id in clients:
+        del clients[user_id]
+        print(f"User {user_id} disconnected.")
 
 async def handler(websocket, path):
-    async for message in websocket:
+    try:
+        message = await websocket.recv()
         data = json.loads(message)
-        print("Received data:", data)
-
+        
         if data["type"] == "register":
-            user_id = data["user_id"]
-            role = data["role"]
-            if role not in connected_clients:
-                connected_clients[role] = {}
-            connected_clients[role][user_id] = websocket
-            print(f"Registered {role} with ID {user_id}")
+            await register(websocket, data["role"], data["user_id"])
 
-        elif data["type"] == "request":
-            # 사용자 요청 처리
-            user_id = data["user_id"]
-            platform_from = data["platform_from"]
-            platform_to = data["platform_to"]
-            
-            # 요청을 저장
-            user_requests[user_id] = {
-                "platform_from": platform_from,
-                "platform_to": platform_to,
-                "websocket": websocket
-            }
+        while True:
+            message = await websocket.recv()
+            data = json.loads(message)
+            if data["type"] in ["access_code", "next_platform", "completion", "login_complete"]:
+                user_id = data["user_id"]
+                if user_id in clients:
+                    await clients[user_id]["websocket"].send(message)
+            elif data["type"] == "access_code_request":
+                admin_id = data["admin_id"]
+                if admin_id in clients:
+                    await clients[admin_id]["websocket"].send(message)
 
-            # 관리자에게 알림
-            if "admin" in connected_clients:
-                for admin_id, admin_ws in connected_clients["admin"].items():
-                    await admin_ws.send(json.dumps({
-                        "type": "new_request",
-                        "user_id": user_id,
-                        "platform_from": platform_from,
-                        "platform_to": platform_to
-                    }))
+    except websockets.ConnectionClosed:
+        await unregister(data["user_id"])
 
-        elif data["type"] == "access_code":
-            # 관리자가 엑세스 코드를 입력하면 사용자에게 전달
-            user_id = data["user_id"]
-            access_code = data["access_code"]
-            platform = data["platform"]
-            user_ws = user_requests[user_id]["websocket"]
-            await user_ws.send(json.dumps({
-                "type": "access_code",
-                "platform": platform,
-                "access_code": access_code
-            }))
+start_server = websockets.serve(handler, "0.0.0.0", 8080)
 
-        elif data["type"] == "next_platform":
-            # 관리자가 완료 버튼을 누르면 다음 플랫폼을 사용자에게 전달
-            user_id = data["user_id"]
-            user_data = user_requests[user_id]
-            platform_to = user_data["platform_to"]
-
-            if platform_to:
-                next_platform = platform_to.pop(0)
-                user_ws = user_requests[user_id]["websocket"]
-                await user_ws.send(json.dumps({
-                    "type": "next_platform",
-                    "platform": next_platform
-                }))
-            else:
-                user_ws = user_requests[user_id]["websocket"]
-                await user_ws.send(json.dumps({
-                    "type": "completion"
-                }))
-
-async def main():
-    async with websockets.serve(handler, "localhost", WS_SERVER_PORT):
-        await asyncio.Future()  # 서버가 종료되지 않도록 유지
-
-asyncio.run(main())
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()
