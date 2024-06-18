@@ -7,7 +7,6 @@ from urllib.parse import urlparse, parse_qs
 
 # 웹소켓 URL 설정
 WS_SERVER_URL = "ws://localhost:8000"
-# WS_SERVER_URL = "ws://jiwon-sync.in10s.co:8000"
 
 # URL 파라미터로부터 연락처를 받아옴
 admin_id = st.query_params["admin_id"]
@@ -50,6 +49,12 @@ async def listen_for_requests():
                     st.session_state.remaining_platforms = [data["platform_from"]] + data["platform_to"]
                     st.session_state.next_platform = st.session_state.remaining_platforms.pop(0)
                     st.experimental_rerun()
+                    st.markdown("""
+                    <script>
+                    var audio = new Audio('https://www.soundjay.com/buttons/sounds/button-14.mp3');
+                    audio.play();
+                    </script>
+                    """, unsafe_allow_html=True)
                 
                 elif data["type"] == "access_code_request":
                     st.session_state.next_platform = data["platform"]
