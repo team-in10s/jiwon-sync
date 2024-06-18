@@ -70,7 +70,7 @@ async def send_data():
                     st.markdown(f"### {platform} 엑세스 코드: {access_code}")
                     st.success(f"{platform}에 엑세스 코드를 입력하여 로그인해주세요.")
                     
-                    if st.button("엑세스 코드 재요청"):
+                    if st.button("엑세스 코드 재요청",f"rerequest_{platform}"):
                         await websocket.send(json.dumps({
                             "type": "access_code_request",
                             "user_id": user_id,
