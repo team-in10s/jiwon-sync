@@ -6,8 +6,7 @@ import nest_asyncio
 from urllib.parse import urlparse, parse_qs
 
 # 웹소켓 URL 설정
-WS_SERVER_URL = "ws://websocket-server:8080"
-
+WS_SERVER_URL = "ws://websocket-server:8000"
 
 # URL 파라미터로부터 연락처를 받아옴
 admin_id = st.query_params["admin_id"]
