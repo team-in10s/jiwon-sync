@@ -70,6 +70,10 @@ async def send_data():
                     access_code = response_data["access_code"]
                     st.markdown(f"#### 엑세스 코드: {access_code}")
                     st.success(f"엑세스 코드를 입력하여 로그인을 진행해주세요.\n모든 로그인이 완료되면 창을 닫아주세요.")
+                    st.markdown("""
+                    ##### 로그인 후 24시간 이내에 지원서류 동기화가 완료됩니다.
+                    - 동기화가 완료되면 문자 메시지로 발송됩니다.
+                    """)
                     
                     # if st.button("엑세스 코드 재요청",f"rerequest_{platform}"):
                     #     await websocket.send(json.dumps({
