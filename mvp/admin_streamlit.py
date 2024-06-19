@@ -49,13 +49,8 @@ async def listen_for_requests():
                     }
                     st.session_state.remaining_platforms = [data["platform_from"]] + data["platform_to"]
                     st.session_state.next_platform = st.session_state.remaining_platforms.pop(0)
+                    st.audio('https://www.soundjay.com/buttons/sounds/button-14.mp3', format="audio/mp3", autoplay=True)
                     st.experimental_rerun()
-                    st.markdown("""
-                    <script>
-                    var audio = new Audio('https://www.soundjay.com/buttons/sounds/button-14.mp3');
-                    audio.play();
-                    </script>
-                    """, unsafe_allow_html=True)
                 
                 elif data["type"] == "access_code_request":
                     st.session_state.next_platform = data["platform"]
@@ -88,10 +83,10 @@ async def send_next_platform(user_id):
                 "type": "completion",
                 "user_id": user_id
             }))
-            st.session_state.current_request = None
-            st.session_state.next_platform = None
-            st.session_state.remaining_platforms = []
-            st.experimental_rerun()
+            # st.session_state.current_request = None
+            # st.session_state.next_platform = None
+            # st.session_state.remaining_platforms = []
+            # st.experimental_rerun()
 
 async def send_login_complete(user_id):
     if st.session_state.websocket:

@@ -24,7 +24,7 @@ st.markdown("""
 - 관련 질문이 있으신 경우, 고객센터로 문의주시면, 최대한 빠르게 답변해드립니다.
 - 고객센터(카카오톡) : http://pf.kakao.com/_xjxkJbG/chat
 ---
-## 보안 및 개인정보 보호
+### 보안 및 개인정보 보호
 
 지원전에 팀은 여러분의 개인정보를 소중히 다루며, 안전한 데이터 전송을 위해 다음과 같은 보안 기술을 적용하고 있습니다:
 
@@ -68,18 +68,19 @@ async def send_data():
                 if response_data["type"] == "access_code":
                     platform = response_data["platform"]
                     access_code = response_data["access_code"]
-                    st.markdown(f"### {platform} 엑세스 코드: {access_code}")
-                    st.success(f"{platform}에 엑세스 코드를 입력하여 로그인해주세요.")
+                    st.markdown(f"#### 엑세스 코드: {access_code}")
+                    st.success(f"엑세스 코드를 입력하여 로그인을 진행해주세요.\n모든 로그인이 완료되면 창을 닫아주세요.")
                     
-                    if st.button("엑세스 코드 재요청",f"rerequest_{platform}"):
-                        await websocket.send(json.dumps({
-                            "type": "access_code_request",
-                            "user_id": user_id,
-                            "platform": platform
-                        }))
-                        st.success("엑세스 코드 재요청이 관리자에게 전달되었습니다.")
+                    # if st.button("엑세스 코드 재요청",f"rerequest_{platform}"):
+                    #     await websocket.send(json.dumps({
+                    #         "type": "access_code_request",
+                    #         "user_id": user_id,
+                    #         "platform": platform
+                    #     }))
+                    #     st.success("엑세스 코드 재요청이 관리자에게 전달되었습니다.")
                 
                 elif response_data["type"] == "login_complete":
+                    st.success("로그인이 완료되었습니다. 잠시 후 연결이 종료됩니다.")
                     st.markdown("""
                     <script>
                     alert("로그인이 완료되었습니다. 잠시 후 연결이 종료됩니다.");
@@ -104,21 +105,37 @@ async def send_data():
                     break
                 
     except websockets.ConnectionClosedError as e:
-        st.error("접속 오류가 발생했습니다. 반드시 PC와 Chrome 브라우저를 이용해주시고, 사용자가 많아 잠시 후 다시 시도해주세요.")
+        st.session_state.button_disabled = False
+        st.session_state.msg_open = False
+        st.error("접속 오류가 발생했습니다. 반드시 PC와 Chrome 브라우저를 이용해주시고, 사용자가 많으니 새로고침 후 다시 시도해주세요.")
 
 def start_sync():
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     loop.run_until_complete(send_data())
 
-if st.button("동기화 시작"):
+# 버튼이 처음 눌렸는지 여부를 저장하는 변수 초기화
+if 'button_disabled' not in st.session_state:
+    st.session_state.button_disabled = False
+if 'msg_open' not in st.session_state:
+    st.session_state.msg_open = True
+def on_button_click():
+    # 버튼이 눌렸음을 기록하고, 버튼을 비활성화
+    st.session_state.button_disabled = True
+
+if st.button("동기화 시작","start_btn", on_click=on_button_click, disabled=st.session_state.button_disabled):
     if platform_from and platform_to:
-        st.markdown("### 3. 아래 링크로 이동하여 각 플랫폼에 대한 엑세스 코드를 입력해주세요.")
-        st.markdown("[Google Remote Desktop 링크](https://remotedesktop.google.com/support)")
-        st.markdown("""
-        - 반드시 PC와 Chrome 브라우저를 이용해주세요.
-        - Google Remote Desktop 설치가 필요하지 않습니다. 링크로 이동 후 엑세스 코드만 입력하시면 됩니다.
-        """)
+        if st.session_state.msg_open:
+            st.markdown("### 3. 아래 링크로 이동하여 엑세스 코드를 입력해주세요.")
+            st.markdown("[Google Remote Desktop 링크](https://remotedesktop.google.com/support)")
+            st.markdown("""
+            - 반드시 PC와 Chrome 브라우저를 이용해주세요.
+            - Google Remote Desktop 설치가 필요하지 않습니다. 링크로 이동 후 엑세스 코드만 입력하시면 됩니다.
+            """)
+            st.image(image="./Untitled.png")
+            st.markdown("""
+            - 하단에 엑세스 코드가 로딩될때까지 잠시만 기다려주세요!
+            """)
         start_sync()
     else:
         st.error("모든 필드를 입력해주세요.")
