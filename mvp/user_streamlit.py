@@ -69,7 +69,7 @@ async def send_data():
                     platform = response_data["platform"]
                     access_code = response_data["access_code"]
                     st.markdown(f"#### 엑세스 코드: {access_code}")
-                    st.success(f"엑세스 코드를 입력하여 로그인을 진행해주세요. 모든 로그인이 완료되면 로그인 한 창을 닫아주세요.\n로그인 완료시, 엑세스가 자동으로 종료됩니다.")
+                    st.success(f"엑세스 코드를 입력하여 로그인을 진행해주세요. 모든 로그인이 완료되면  창을 닫아주세요.\n창을 닫으면 엑세스가 자동으로 종료됩니다.")
                     st.markdown("""
                     ##### 로그인 후 24시간 이내에 지원서류 동기화가 완료됩니다.
                     - 동기화가 완료되면 문자 메시지로 발송됩니다.
